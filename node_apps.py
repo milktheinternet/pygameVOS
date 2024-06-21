@@ -61,15 +61,43 @@ class SurfaceNode(Node):
         super().render()
 
 class SliderNode(SurfaceNode):
-    def __init__(self, app, pos=(0,0), size=(250, 25), value=0, maximum=255, rounded=True):
+    def __init__(self, app, pos=(0,0), size=(250, 25), value=0, maximum=255, rounded=True, bg=(0,0,0),
+                 fg=(255,255,255)):
         super().__init__(app, pos, size)
+        self.value, self.maximum, self.rounded = value, maximum, rounded
+        self.bg = bg
+        self.fg = fg
+        self.changed = False
+        self.dragging = False
 
     def on_change(self, value):
         pass
 
     def update(self):
         mx, my = self.app.mouse
+        mx = (mx - self.x)/self.size[0]
+        my = (my - self.y)/self.size[1]
         
+        if self.vos.input.click_inst:
+            if 0 <= mx < 1 and 0 <= my < 1:
+                self.dragging = True
+                
+        if self.dragging:
+            if not self.vos.input.click:
+                self.dragging = False
+            self.value = max(0, min(self.maximum, mx * self.maximum))
+            if self.rounded:
+                self.value = round(self.value)
+            self.changed = True
+        
+        elif self.changed:
+            self.on_change(self.value)
+            self.changed = False
+
+    def render(self):
+        self.srf.fill(self.bg)
+        pg.draw.rect(self.srf, self.fg, (0, 0, round(self.value/self.maximum*self.size[0]), self.size[1]))
+        super().render()
 
 class RectNode(Node):
     def __init__(self, app, pos=(0,0), size=(100, 100), color=(255,0,255)):
