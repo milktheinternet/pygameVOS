@@ -60,6 +60,17 @@ class SurfaceNode(Node):
         self.parent_srf.blit(self.srf, self.global_pos)
         super().render()
 
+class SliderNode(SurfaceNode):
+    def __init__(self, app, pos=(0,0), size=(250, 25), value=0, maximum=255, rounded=True):
+        super().__init__(app, pos, size)
+
+    def on_change(self, value):
+        pass
+
+    def update(self):
+        mx, my = self.app.mouse
+        
+
 class RectNode(Node):
     def __init__(self, app, pos=(0,0), size=(100, 100), color=(255,0,255)):
         super().__init__(app, pos)
