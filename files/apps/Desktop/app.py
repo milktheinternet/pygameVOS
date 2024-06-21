@@ -3,6 +3,8 @@ from vos import *
 class MyApp(WindowApp):
     def __init__(self, vos):
         super().__init__(vos, "Desktop")
+
+        self.bg = (50,100,150)
         
         self.icons = {}
 
@@ -43,9 +45,11 @@ class MyApp(WindowApp):
         for app in self.vos.apps:
             if not app.desktop:
                 continue
-            
-            if os.path.exists(app.path+'icon.png'):
-                srf = pg.image.load(app.path+'icon.png')
+
+            ico_path = self.vos.path+app.path+'icon.png'
+            if os.path.exists(ico_path):
+                srf = self.vos.load_image(app.path+'icon.png', True)
+                srf = pg.transform.smoothscale(srf, (self.size, self.size))
             else:
                 print(app.path+'icon.png', 'not found')
                 srf = self.makeIcon(app.name)

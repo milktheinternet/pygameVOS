@@ -52,10 +52,16 @@ class MyApp(DictMenuApp):
         self.tree = self.make_options(path)
 
     def open_file(self, path):
-        for app in self.vos.apps:
-            if app.open_path(path):
-                return
+        self.vos.open_with_app(path)
         self.close()
+
+    def newfolder(self, path):
+        self.vos.get_app("Prompt").run(lambda name:(self.vos.mkdir(path+"/"+name), self.focus(), self.update_tree()),
+                                       f"Name the folder to create in '{path}'")
+
+    def newfile(self, path):
+        self.vos.get_app("Prompt").run(lambda name:(self.vos.save(path+"/"+name,''), self.focus(), self.update_tree()),
+                                       f"Name the file to create in '{path}'")
     
     def make_options(self, path):
         if not path or path[-1] == '/':
@@ -68,7 +74,9 @@ class MyApp(DictMenuApp):
                 "copy":lambda:self.copy(path),
                 "paste":lambda:self.paste(path),
                 "delete":lambda:self.delete(path),
-                "rename":lambda:self.rename(path)
+                "rename":lambda:self.rename(path),
+                "new subfolder":lambda:self.newfolder(path),
+                "new file":lambda:self.newfile(path)
                 }
         else:
             return {

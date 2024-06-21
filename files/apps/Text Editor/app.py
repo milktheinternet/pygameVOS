@@ -38,15 +38,11 @@ class MyApp(NodeApp):
 
     def toggle_fs(self):
         self.fullscreen = not self.fullscreen
-        self.resize(self.vos.res if self.fullscreen else self.ores)
+        self.resize(self.vos.res if self.fullscreen else self.init_res)
         self.setup_nodes()
 
     def open_path(self, path):
-        if self.can_open_path(path):
-            self.openfile(path)
-            self.focus()
-            return True
-        return False
+        self.run().openfile(path)
 
     def btnsaveas(self):
         def cb(name):
@@ -73,7 +69,9 @@ class MyApp(NodeApp):
             app.callback = cb
 
     def btnsave(self):
-        if self.savepath: self.vos.save(self.savepath, self.get_text())
+        if self.savepath:
+            self.vos.save(self.savepath, self.get_text())
+            self.saved = True
 
     def btnnewfile(self):
         self.savepath = None

@@ -1,5 +1,5 @@
 
-
+import shutil
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "TRUE"
 import pygame as pg
@@ -7,37 +7,44 @@ pg.init()
 
 from pg_input import Input
 from app_loader import get_app
+
+# import app classes
 from vos_apps import *
 from node_apps import *
 
-import shutil
-
-
+# VOS stands for Virtual Operating System
 class VOS:
     def __init__(self, res = (1020, 765)):
 
         self.init_display(res)
-        
+ 
         self.path = 'files/'
-        self.path_tmp = self.path+'tmp/'
-        self.path_apps = self.path+'apps/'
-        self.path_fonts = self.path+'fonts/'
+        self.path_tmp = 'tmp/'
+        self.path_apps = 'apps/'
+        self.path_fonts = 'fonts/'
         
         self.clock = pg.time.Clock()
-        self.time = 0
+        self.time = 0 # how many ms since the VOS has started
         
         self.open_with = {}
-        self.running = []
-        self.on_run_funcs = []
+        # vos.open_with["py"] = <App class instance>
+        
+        self.running = [] # a list of all apps that are currently running
+        self.on_run_funcs = [] # when an app is run, all functions in this list are called with the app as a parameter
 
         self.input = Input()
 
+        # every call to vos.log is stored here
         self.LOG = ""
 
+        # creates an instance of each app class. This does not "run" the app.
         self.get_apps()
 
-        self.settings = {}
-        
+    # FILE OPERATIONS
+    # all file operations are done from self.path a.k.a "files/"
+
+    # copies source path (from_) to destination path (to_)
+    # works recursively and for files
     def copy(self, from_, to_):
         from_ = self.path + from_
         to_ = self.path + to_
@@ -58,6 +65,7 @@ class VOS:
             self.log('source does not exist: ',from_)
             return False
 
+    # lists all of the files in a directory
     def listdir(self, path):
         path = self.path + path
         if os.path.isdir(path):
@@ -65,6 +73,7 @@ class VOS:
         else:
             return False
 
+    # deletes a file or folder
     def delete(self, path):
         path = self.path + path
         self.log('deleting',path)
@@ -80,6 +89,7 @@ class VOS:
             self.log('not found')
             return False
 
+    # saves a file
     def save(self, path, content):
         path = self.path + path
         dest_folder = '/'.join(path.split('/')[:-1])
@@ -91,6 +101,7 @@ class VOS:
             self.log("file saved")
             return True
 
+    # creates a folder
     def mkdir(self, path):
         path = self.path + path
         if path[-1] == '/': path = path[:-1]
@@ -105,6 +116,7 @@ class VOS:
             print("folder already exists")
         return True
 
+    # loads a file and returns string
     def load(self, path):
         path = self.path + path
         if os.path.exists(path):
@@ -112,6 +124,17 @@ class VOS:
                 return f.read()
         return False
 
+    # loads a file and returns pg.Surface
+    # reccomended to use .convert() or .convert_alpha()
+    def load_image(self, path, transparent = False):
+        path = self.path + path
+        if os.path.exists(path):
+            img = pg.image.load(path)
+            return img.convert_alpha() if transparent else img.convert()
+        return False
+
+    # Opens a file with an App
+    # generally will require you to call `app = this.run()` within the app class's open_path function
     def open_with_app(self, path):
         ext = path.split('.')[-1]
         app = self.open_with.get(ext)
@@ -119,10 +142,12 @@ class VOS:
             app.open_path(path)
         return bool(app)
 
+    # called by apps when they run
     def on_run(self, app):
         for func in self.on_run_funcs:
             func(app)
 
+    # handle creating the pygame window
     def init_display(self, res):
         if res:
             self.res = res
@@ -131,18 +156,22 @@ class VOS:
             self.srf = pg.display.set_mode()
             self.res = self.srf.get_size()
 
+    # adds text to vos.LOG
+    # should be used instead of print
     def log(self, *text):
         text = ' '.join(text)
         self.LOG += text + '\n'
         print(text)
-        
+
+    # loads a font from files/fonts/{font_name}.otf
     def load_font(self, name="monospace", size=17):
-        return pg.font.Font(self.path_fonts + name + '.otf', size)
+        return pg.font.Font(self.path + self.path_fonts + name + '.otf', size)
+
     
     def get_apps(self):
         apps = []
-        for app in os.listdir(self.path_apps):
-            p = self.path_apps + app
+        for app in os.listdir(self.path + self.path_apps):
+            p = self.path + self.path_apps + app
             if os.path.isdir(p) and os.path.exists(p+'/app.py'):
                 apps.append(get_app(p+'/app.py')(self))
         self.apps = apps

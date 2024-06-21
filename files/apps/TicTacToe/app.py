@@ -1,4 +1,4 @@
-from virtualOS import pg, WindowApp
+from vos import *
 
 PATTERNS = (
     ((1,1,1),(0,0,0),(0,0,0)),
@@ -12,13 +12,13 @@ PATTERNS = (
     )
 
 class MyApp(WindowApp):
-    def __init__(self, name, vos, resolution = (32*3+80, 32*3+80)):
-        super().__init__(name, vos, resolution)
+    def __init__(self, vos):
+        super().__init__(vos, 'TicTacToe', (32*3+80, 32*3+80))
         self.bg = (10,10,10)
         self.fg = (100,100,100)
         self.grid = [[0,0,0],[0,0,0],[0,0,0]]
-        self.X_IMG = self.load_image("X.png")
-        self.O_IMG = self.load_image("O.png")
+        self.X_IMG = self.vos.load_image(self.path+"X.png")
+        self.O_IMG = self.vos.load_image(self.path+"O.png")
         self.margin = 20
         self.gridsz = self.margin//5
         self.SZ = 32#(32 - self.margin * 4)//3
@@ -28,7 +28,7 @@ class MyApp(WindowApp):
         self.X_IMG = resize(self.X_IMG)
         self.O_IMG = resize(self.O_IMG)
         self.winner = None
-        self.font = pg.font.SysFont('helvetica', 40)
+        self.font = self.vos.load_font(size=40)
         self.stop_rendering = False
     def render(self):
         super().render()
@@ -71,10 +71,10 @@ class MyApp(WindowApp):
         if self.winner:
             return
         inp = self.vos.input
-        mx, my = inp.mouse
-        mx -= self.pos[0] + self.margin//2
+        mx, my = self.mouse
+        mx -= self.margin//2
         mx //= self.SZ + self.margin
-        my -= self.pos[1] + self.margin//2
+        my -= self.margin//2
         my //= self.SZ + self.margin
         if inp.click_inst and 0 <= mx < 3 and 0 <= my < 3 and not self.grid[my][mx]:
             self.grid[my][mx] = self.turn
