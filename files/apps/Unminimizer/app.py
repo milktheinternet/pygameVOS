@@ -47,7 +47,7 @@ class MyApp(WindowApp):
                 if btn['name']==app.name:
                     srf = btn['srf']
             if not srf:
-                srf = self.desk.makeIcon(self, app.name)
+                srf = self.desk.makeIcon(app.name)
                 
             self.srf.blit(srf, (x,y))
             self.appbtns.append({"app":app, "rect":(x,y, self.size, self.size)})

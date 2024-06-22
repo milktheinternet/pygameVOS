@@ -32,16 +32,20 @@ class Node:
         self.parent = None
         self.x, self.y = pos
         self.orphan = True
+        self.visible = True
+        self.active = True
     @property
     def global_pos(self):
         x, y = self.parent.global_pos
         return self.x, self.y
     def update(self):
         for node in self.children:
-            node.update()
+            if node.active:
+                node.update()
     def render(self):
         for node in self.children:
-            node.render()
+            if node.visible:
+                node.render()
     def add(self, node):
         self.children.append(node)
         node.parent = self
@@ -75,6 +79,10 @@ class SliderNode(SurfaceNode):
         self.fg = fg
         self.changed = False
         self.dragging = False
+
+    def set_value(self, value):
+        self.value = value
+        self.on_change(value)
 
     def on_change(self, value):
         pass

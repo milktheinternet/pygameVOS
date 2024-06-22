@@ -220,6 +220,6 @@ class VOS:
         pg.display.update()
 
 if __name__ == "__main__":
-    vos = VOS()
+    vos = VOS(res=None)
     vos.get_app("Desktop").run()
     vos.start()

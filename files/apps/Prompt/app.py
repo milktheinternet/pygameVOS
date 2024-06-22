@@ -8,10 +8,10 @@ class MyApp(NodeApp):
         self.callback = lambda x:self.vos.log("No callback for prompt. Response:",x)
         self.prompt = "Enter text:"
 
-    def run(self, callback, prompt):
+    def run(self, callback=None, prompt=None):
         app = super().run()
-        app.callback = callback
-        app.prompt = prompt
+        if callback: app.callback = callback
+        if prompt: app.prompt = prompt
 
     def on_run(self):
         super().on_run()
@@ -49,8 +49,8 @@ class MyApp(NodeApp):
             inp.text = ""
             self.resp_node.text = self.resp
             self.render_nodes()
-        if pg.K_BACKSPACE in inp.keys:
-            self.resp += self.resp[:-1]
+        if pg.K_BACKSPACE in inp.keys_inst:
+            self.resp = self.resp[:-1]
             self.resp_node.text = self.resp
             self.render_nodes()
 
