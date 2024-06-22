@@ -51,14 +51,20 @@ class Node:
         node.orphan = True
 
 class SurfaceNode(Node):
-    def __init__(self, app, pos=(0,0), size=(100, 100)):
+    def __init__(self, app, pos=(0,0), size=(100, 100), alpha = False):
         super().__init__(app, pos)
         self.size = size
-        self.srf = pg.Surface(size)
+        self.srf = pg.Surface(size) if not alpha else pg.Surface(size, pg.SRCALPHA)
         self.parent_srf = self.app.srf
     def render(self):
         self.parent_srf.blit(self.srf, self.global_pos)
         super().render()
+
+class ImageNode(SurfaceNode):
+    def __init__(self, app, pos=(0,0), size=(100, 100), srf=None, smooth=False):
+        super().__init__(app, pos, size)
+        if srf:
+            self.srf = (pg.transform.smoothscale if smooth else pg.transform.scale)(srf, size)
 
 class SliderNode(SurfaceNode):
     def __init__(self, app, pos=(0,0), size=(250, 25), value=0, maximum=255, rounded=True, bg=(0,0,0),
@@ -110,28 +116,33 @@ class RectNode(Node):
         super().render()
 
 class TextNode(SurfaceNode):
-    def __init__(self, app, pos=(0,0), size=(100, 100), text="This is a TextNode", font = None, color=(255,255,255), background=(0,0,0), center = False, parent_srf = None):
-        super().__init__(app, pos, size)
+    def __init__(self, app, pos=(0,0), size=(100, 100), text="This is a TextNode", font = None,
+                 color=(255,255,255), background=(0,0,0), center = False, parent_srf = None,
+                 nobg = False):
+        super().__init__(app, pos, size, alpha = nobg)
         if parent_srf:
             self.parent_srf = parent_srf
         self.text = text
         self.old_text = None
-        self.font = font if font else self.vos.font
+        self.font = font if font else self.vos.load_font(size=17)
         self.color = color
         self.bg = background
         self.center = center
+        self.nobg = nobg
     def render(self):
         if self.text != self.old_text:
-            if self.bg:
+            if self.nobg:
+                self.srf.fill((0,0,0,0))
+            elif self.bg:
                 self.srf.fill(self.bg)
             self.old_text = self.text
-            srf = self.font.render(self.text, True, self.color, self.bg)
-            if not self.center:
-                self.srf.blit(srf, (0,0))
-            else:
+            srf = self.font.render(self.text, True, self.color, self.bg if self.nobg else None)
+            x, y = 0, 0
+            if self.center:
                 w, h = srf.get_size()
                 W, H = self.size
-                self.srf.blit(srf, (W//2-w//2,H//2-h//2))
+                x, y = (W//2-w//2,H//2-h//2)
+            self.srf.blit(srf, (x,y))
         super().render()
 
 class ScrollTextNode(SurfaceNode):
