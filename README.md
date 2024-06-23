@@ -1,4 +1,4 @@
-Certainly! Here's a README template for your Virtual Operating System (VOS) project:
+![alt text](https://github.com/milktheinternet/pygameVOS/blob/assets/screenshot.png?raw=true)
 
 ---
 
