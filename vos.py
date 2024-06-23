@@ -144,6 +144,8 @@ class VOS:
 
     # called by apps when they run
     def on_run(self, app):
+        self.log("running",app.name)
+        self.input.reset()
         for func in self.on_run_funcs:
             func(app)
 
@@ -153,7 +155,7 @@ class VOS:
             self.res = res
             self.srf = pg.display.set_mode(self.res)
         else:
-            self.srf = pg.display.set_mode()
+            self.srf = pg.display.set_mode((0,0), pg.FULLSCREEN)
             self.res = self.srf.get_size()
 
     # adds text to vos.LOG

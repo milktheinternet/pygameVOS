@@ -188,18 +188,22 @@ class MyApp(NodeApp):
             self.saved = False
             
         if pg.K_BACKSPACE in inp.keys_inst:
-            if self.at_x == 0:
-                lines = self.lines
-                self.at_x = len(lines[self.at_y-1])
-                self.lines[self.at_y-1] += lines[self.at_y]
-                self.lines = lines[:self.at_y] + lines[self.at_y+1:]
-            else:
-                line = self.lines[self.at_y]
-                if line:
-                    self.lines[self.at_y] = line[:self.at_x-1] + line[self.at_x:]
+            try:
+                if self.at_x == 0:
+                    lines = self.lines
+                    self.at_x = len(lines[self.at_y-1])
+                    self.lines[self.at_y-1] += lines[self.at_y]
+                    self.lines = lines[:self.at_y] + lines[self.at_y+1:]
+                else:
+                    line = self.lines[self.at_y]
+                    if line:
+                        self.lines[self.at_y] = line[:self.at_x-1] + line[self.at_x:]
+            except IndexError:pass
+            
             inp.keys_inst.append(pg.K_LEFT)
             inp.keys.append(pg.K_LEFT)
             self.saved = False
+            if not self.lines:self.lines = ['']
 
         self.handle_cursor()
 

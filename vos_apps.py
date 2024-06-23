@@ -26,7 +26,6 @@ class App:
         self.vos.log(f'opened {path} with {self.name} (did nothing)')
         
     def run(self):
-        self.vos.log("running",self.name)
         app = type(self)(self.vos)
         self.vos.running.append(app)
         app.on_run()
@@ -174,6 +173,9 @@ class WindowApp(SurfaceApp):
         return (self.x, self.y-self.tab_height)
 
     def resize(self, res=None):
+
+        self.vos.input.reset()
+        
         if res: self.res = res
 
         self.fs = self.res == self.vos.res

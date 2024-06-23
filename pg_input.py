@@ -5,12 +5,18 @@ import pygame as pg
 
 class Input:
     def __init__(self):
+        
+        self.quit = False
+
+        self.on_click = []
+        
+        self.reset()
+
+    def reset(self):
         # keys_inst is reset with every update
         # if key in keys[]
         self.keys_inst = []
         self.keys = []
-        
-        self.quit = False
 
         # to keep track of input text, you can simply set it to "" and then it will automatically update.
         self.text = ""
@@ -18,8 +24,6 @@ class Input:
         self.mouse = (0,0)
         self.click_inst = False
         self.click = False
-
-        self.on_click = []
 
         self.scroll = 0
         

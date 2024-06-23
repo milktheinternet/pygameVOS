@@ -17,13 +17,22 @@ class Canvas(SurfaceNode):
         self.cnv.fill((0, 0, 0, 0))
         self.cnvw, self.cnvh = cnvsize
 
+        W, H = self.size
+        if self.cnvw > self.cnvh:
+            cnvw, cnvh = (W, W/self.cnvw*self.cnvh)
+        else:
+            cnvw, cnvh = (H/self.cnvh*self.cnvw, H)
+
+        self.cnv_size = (cnvw, cnvh)
+        self.cnv_pos = (W//2-cnvw//2, H//2-cnvh//2)
+
         self.checkerboard = pg.Surface(cnvsize)
         self.checkerboard.fill(cb1)
         for x in range(self.cnvw):
             for y in range(self.cnvh):
                 if x%2==y%2:
                     self.checkerboard.set_at((x,y), cb2)
-        self.checkerboard = pg.transform.scale(self.checkerboard, self.size)
+        self.checkerboard = pg.transform.scale(self.checkerboard, self.cnv_size)
 
     def set_image(self, srf):
         self.cnv = srf
@@ -31,8 +40,9 @@ class Canvas(SurfaceNode):
     def to_cnv(self, pos):
         x, y = pos
         gx, gy = self.global_pos
-        x = floor((x - gx)/self.size[0]*self.cnvw)
-        y = floor((y - gy)/self.size[1]*self.cnvh)
+        cnvx, cnvy = self.cnv_pos
+        x = floor((x - gx - cnvx)/self.cnv_size[0]*self.cnvw)
+        y = floor((y - gy - cnvy)/self.cnv_size[1]*self.cnvh)
         return x, y
 
     def on_cnv(self, pos):
@@ -73,8 +83,8 @@ class Canvas(SurfaceNode):
                     stack.append((x + xm, y + ym))
 
     def render(self):
-        self.srf.blit(self.checkerboard, (0,0))
-        self.srf.blit(pg.transform.scale(self.cnv, self.size), (0,0))
+        self.srf.blit(self.checkerboard, self.cnv_pos)
+        self.srf.blit(pg.transform.scale(self.cnv, self.cnv_size), self.cnv_pos)
         super().render()
 
 class MyApp(NodeApp):
@@ -113,9 +123,19 @@ class MyApp(NodeApp):
     def set_color(self):
         def callback(c):
             self.draw_color = c
+            self.notify(f"Set color to {self.draw_color}.")
         app = self.vos.get_app('Color Picker').run()
         app.set_color(self.draw_color)
         app.callback = callback
+
+    def set_size(self):
+        def callback(sz):
+            try:
+                self.pen_size = int(sz)
+                self.notify(f"Set size to {self.pen_size}.")
+            except ValueError:
+                self.notify(f"Invalid size!")
+        app = self.prompt(callback, "Set pen size:")
 
     def set_tool(self, tool):
         self.notify(f"Switched to {tool} tool.")
@@ -151,8 +171,7 @@ class MyApp(NodeApp):
             pg.image.save(self.cnv.cnv, self.vos.path+self.savepath)
 
     def prompt(self, callback, prompt):
-        self.vos.get_app('Prompt').run(callback, prompt)
-        self.focus()
+        self.vos.get_app('Prompt').run(lambda resp:(callback(resp), self.focus()), prompt)
 
     def fullscreen(self):
         cnv = self.cnv.cnv
@@ -168,17 +187,23 @@ class MyApp(NodeApp):
         self.add(self.cnv)
 
         button_data = {
-            "save":self.save,
-            "new":lambda:(self.fullscreen() if self.fs else 0,self.btn_new()),
-            "color":self.set_color,
-            "pen":lambda:self.set_tool(self.TOOL_DRAW),
-            "line":lambda:self.set_tool(self.TOOL_LINE),
-            "fill":lambda:self.set_tool(self.TOOL_FILL),
-            "fullscreen":self.fullscreen
+            "save [shift + s]":self.save,
+            "new [shift + n]":lambda:(self.fullscreen() if self.fs else 0,self.btn_new()),
+            
+            "color [c]":self.set_color,
+            "size [s]":self.set_size,
+            
+            "pen [p]":lambda:self.set_tool(self.TOOL_DRAW),
+            "line [l]":lambda:self.set_tool(self.TOOL_LINE),
+            "fill [f]":lambda:self.set_tool(self.TOOL_FILL),
+            
+            "fullscreen [shift + f]":self.fullscreen
             }
         
         btn_w = self.res[0] - self.cnv.size[0]
         btn_h = self.res[1] / len(button_data)
+
+        self.truecnv = None
 
         x, y = self.cnv.size[0], 0
 
@@ -192,6 +217,16 @@ class MyApp(NodeApp):
     def update(self):
         super().update()
         inp = self.vos.input
+
+        if inp.text:
+            text = inp.text
+            if ord(text[0]) in range(ord('A'), ord('Z')+1):
+                text = 'shift + '+text.lower()
+            text = f'[{text}]'
+            for name, btn in self.btns.items():
+                if text in name:
+                    btn.on_press()
+            inp.text = ""
         
         if self.tool == self.TOOL_DRAW:
             if inp.click:
@@ -199,10 +234,13 @@ class MyApp(NodeApp):
                 
         elif self.tool == self.TOOL_LINE:
             if inp.click_inst:
-                self.line_tool_start = self.mouse
-            elif not inp.click and self.line_tool_start:
-                self.cnv.line(self.draw_color, self.line_tool_start, self.mouse)
-                self.line_tool_start = None
+                self.tool_line_start = self.mouse
+                self.truecnv = self.cnv.cnv.copy()
+            elif inp.click and self.truecnv:
+                self.cnv.cnv = self.truecnv.copy()
+                self.cnv.line(self.draw_color, self.tool_line_start, self.mouse)
+            elif not inp.click and self.tool_line_start:
+                self.tool_line_start = None
                 
         elif self.tool == self.TOOL_FILL:
             if inp.click_inst:

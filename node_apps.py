@@ -9,11 +9,11 @@ class NodeApp(WindowApp):
     def update(self):
         super().update()
         for node in self.children:
-            node.update()
+            if node.active:node.update()
     def render_nodes(self):
         self.srf.fill(self.bg)
         for node in self.children:
-            node.render()
+            if node.visible:node.render()
     def render(self):
         super().render()
     def add(self, node):

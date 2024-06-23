@@ -4,6 +4,8 @@ class MyApp(NodeApp):
     def __init__(self, vos):
         super().__init__(vos, "Color Picker", (255 + 100, 100))
         self.callback = lambda color:self.vos.log("Color Picker returned",str(color))
+        self.prompt = "Enter text:"
+        self.desktop = False
 
     def on_run(self):
         super().on_run()

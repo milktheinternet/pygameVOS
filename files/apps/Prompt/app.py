@@ -12,6 +12,8 @@ class MyApp(NodeApp):
         app = super().run()
         if callback: app.callback = callback
         if prompt: app.prompt = prompt
+        app.prompt_node.text = app.prompt
+        app.render_nodes()
 
     def on_run(self):
         super().on_run()
