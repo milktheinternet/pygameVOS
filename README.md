@@ -1,4 +1,4 @@
-![alt text](https://github.com/milktheinternet/pygameVOS/blob/assets/screenshot.png?raw=true)
+![alt text](https://github.com/milktheinternet/pygameVOS/blob/main/assets/screenshot.png?raw=true)
 
 ---
 
