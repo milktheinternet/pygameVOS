@@ -1,5 +1,5 @@
 from vos import *
-from math import floor
+from math import floor, sqrt
 
 class Notify(TextNode):
     def __init__(self, app, text):
@@ -49,13 +49,33 @@ class Canvas(SurfaceNode):
         x, y = pos
         return 0 <= x < self.cnvw and 0 <= y < self.cnvh
 
-    def draw(self, color, pos):
+    def draw(self, color, pos, sz=1):
+        sz /= 2
         x, y = self.to_cnv(pos)
         if self.on_cnv((x, y)):
-            self.cnv.set_at((x, y), color)
+            if sz >= 1: pg.draw.circle(self.cnv, color, (x, y), sz)
+            else:self.cnv.set_at((x,y), color)
 
-    def line(self, color, from_pos, to_pos):
-        pg.draw.line(self.cnv, color, self.to_cnv(from_pos), self.to_cnv(to_pos))
+    def line(self, color, from_pos, to_pos, sz=1):
+        self.draw(color, from_pos, sz-1 if sz <= 3 else sz)
+        self.draw(color, to_pos, sz-1 if sz <= 3 else sz)
+        from_pos, to_pos = self.to_cnv(from_pos), self.to_cnv(to_pos)
+        pg.draw.line(self.cnv, color, from_pos, to_pos, sz)
+
+    def circle(self, color, from_pos, to_pos, sz=1):
+        sx, sy = self.to_cnv(from_pos)
+        ex, ey = self.to_cnv(to_pos)
+        dist = sqrt((sx-ex)**2 + (sy-ey)**2)
+        pg.draw.circle(self.cnv, color, (sx, sy), round(dist), sz)
+
+    def rect(self, color, from_pos, to_pos, sz=1):
+        sx, sy = self.to_cnv(from_pos)
+        ex, ey = self.to_cnv(to_pos)
+        if ex < sx: sx, ex = ex, sx
+        if ey < sy: sy, ey = ey, sy
+        w, h = ex - sx + 1, ey - sy + 1
+        if w and h:
+            pg.draw.rect(self.cnv, color, (sx, sy, w, h), sz)
 
     def list2d(self):
         return [[self.cnv.get_at((x,y)) for y in range(self.cnvh)] for x in range(self.cnvw)]
@@ -101,10 +121,13 @@ class MyApp(NodeApp):
 
         self.draw_color = (0,0,0,255)
 
-        self.TOOL_DRAW, self.TOOL_FILL, self.TOOL_LINE = 'draw', 'fill', 'line'
+        self.TOOL_DRAW, self.TOOL_FILL, self.TOOL_LINE, self.TOOL_RECT, self.TOOL_CIRCLE \
+                        = 'draw fill line rect circle'.split()
         self.tool = self.TOOL_DRAW
 
-        self.tool_line_start = None
+        self.pen_size = 1
+
+        self.tool_mouse_start = None
 
         self.cnv_size = (32, 32)
 
@@ -197,6 +220,9 @@ class MyApp(NodeApp):
             "line [l]":lambda:self.set_tool(self.TOOL_LINE),
             "fill [f]":lambda:self.set_tool(self.TOOL_FILL),
             
+            "rect [r]":lambda:self.set_tool(self.TOOL_RECT),
+            "circle [o]":lambda:self.set_tool(self.TOOL_CIRCLE),
+            
             "fullscreen [shift + f]":self.fullscreen
             }
         
@@ -230,17 +256,22 @@ class MyApp(NodeApp):
         
         if self.tool == self.TOOL_DRAW:
             if inp.click:
-                self.cnv.draw(self.draw_color, self.mouse)
+                self.cnv.draw(self.draw_color, self.mouse, self.pen_size)
                 
-        elif self.tool == self.TOOL_LINE:
+        elif self.tool in [self.TOOL_LINE, self.TOOL_CIRCLE, self.TOOL_RECT]:
             if inp.click_inst:
-                self.tool_line_start = self.mouse
+                self.tool_mouse_start = self.mouse
                 self.truecnv = self.cnv.cnv.copy()
             elif inp.click and self.truecnv:
                 self.cnv.cnv = self.truecnv.copy()
-                self.cnv.line(self.draw_color, self.tool_line_start, self.mouse)
-            elif not inp.click and self.tool_line_start:
-                self.tool_line_start = None
+                func = {
+                    self.TOOL_LINE:self.cnv.line,
+                    self.TOOL_CIRCLE:self.cnv.circle,
+                    self.TOOL_RECT:self.cnv.rect
+                    }[self.tool]
+                func(self.draw_color, self.tool_mouse_start, self.mouse, self.pen_size)
+            elif not inp.click and self.tool_mouse_start:
+                self.tool_mouse_start = None
                 
         elif self.tool == self.TOOL_FILL:
             if inp.click_inst:

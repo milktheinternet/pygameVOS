@@ -77,6 +77,10 @@ class MyApp(NodeApp):
                 self.last_slider.on_change(self.last_slider.value)
             except ValueError:pass
             inp.text = ""
+
+        if pg.K_LSHIFT in inp.keys or pg.K_RSHIFT in inp.keys:
+            if not point_within_rect(inp.mouse, self.full_rect):
+                self.set_color(self.vos.srf.get_at(inp.mouse))
         
         color = tuple([slider.value for slider in self.sliders])
         self.color = color

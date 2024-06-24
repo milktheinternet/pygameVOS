@@ -24,6 +24,7 @@ class MyApp(NodeApp):
         self.focus()
 
     def on_confirm(self):
+        self.vos.input.reset()
         self.callback(self.resp)
         self.close()
 
@@ -55,6 +56,8 @@ class MyApp(NodeApp):
             self.resp = self.resp[:-1]
             self.resp_node.text = self.resp
             self.render_nodes()
+        if pg.K_RETURN in inp.keys_inst:
+            self.on_confirm()
 
     def render(self):
         super().render()
