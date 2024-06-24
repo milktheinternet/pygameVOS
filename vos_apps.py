@@ -95,6 +95,10 @@ class WindowApp(SurfaceApp):
 
         self.fs = False
 
+        self.minimize_start = 0
+        self.minimize_duration = 500
+        self.minimize_srf = None
+
     def on_run(self):
         super().on_run()
         self.focus()
@@ -156,6 +160,7 @@ class WindowApp(SurfaceApp):
         self.visible = False
         self.active = False
         self.vos.log(f"minimizing {self.name}")
+        self.animate_minimize()
         self.on_minimize(self)
 
     def on_minimize(self, app):
@@ -197,12 +202,39 @@ class WindowApp(SurfaceApp):
     def render(self):
         if self.visible:
             super().render()
+
+    def animate_minimize(self):
+        srf = pg.Surface(self.full_rect[2:])
+        srf.blit(self.tab_srf, (0,0))
+        srf.blit(self.srf, (0, self.tab_height))
+        self.minimize_start = self.vos.time
+        self.minimize_srf = srf
+        print("Started minimization animation")
+        
     
     def idle_render(self):
         if self.visible:
             if not self.fs:
                 self.render_tab()
             super().idle_render()
+        if self.minimize_start:
+            delta = self.vos.time - self.minimize_start
+            delta /= self.minimize_duration
+            delta **= 2
+            if delta > 1:
+                self.minimize_start = 0
+            else:
+                scale = 1 - delta
+                self.minimize_srf.set_alpha(
+                    round(scale*255))
+                size = (round(self.res[0]*scale),
+                        round(self.res[1]*scale))
+                x, y = self.tab_pos
+                pos = (x+self.res[0]-size[0],
+                       y)
+                self.vos.srf.blit(
+                    pg.transform.smoothscale(
+                        self.minimize_srf, size), pos)
 
     def render_tab(self):
         self.parent_srf.blit(self.tab_srf, self.tab_pos)

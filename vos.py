@@ -214,11 +214,10 @@ class VOS:
         
     def render(self):
         for app in self.running:
-            if app.visible:
-                if app.active:
-                    app.render()
-                else:
-                    app.idle_render()
+            if app.active:
+                app.render()
+            else:
+                app.idle_render()
         pg.display.update()
 
 if __name__ == "__main__":
