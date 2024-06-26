@@ -14,14 +14,9 @@ from node_apps import *
 
 # VOS stands for Virtual Operating System
 class VOS:
-    def __init__(self, res = (1020, 765)):
+    def __init__(self, res=None, user="login"):
 
         self.init_display(res)
- 
-        self.path = 'files/'
-        self.path_tmp = 'tmp/'
-        self.path_apps = 'apps/'
-        self.path_fonts = 'fonts/'
         
         self.clock = pg.time.Clock()
         self.time = 0 # how many ms since the VOS has started
@@ -37,11 +32,21 @@ class VOS:
         # every call to vos.log is stored here
         self.LOG = ""
 
+        self.set_user(user)
+
+    def set_user(self, username):
+        
+        self.path = 'users/'+username+'/'
+        self.path_tmp = 'tmp/'
+        self.path_apps = 'apps/'
+        self.path_fonts = 'fonts/'
+
         # creates an instance of each app class. This does not "run" the app.
         self.get_apps()
+        self.get_app("start").run()
 
     # FILE OPERATIONS
-    # all file operations are done from self.path a.k.a "files/"
+    # all file operations are done from self.path a.k.a "users/"
 
     # copies source path (from_) to destination path (to_)
     # works recursively and for files
@@ -151,6 +156,7 @@ class VOS:
 
     # handle creating the pygame window
     def init_display(self, res):
+        self.fullscreen = False if res else True
         if res:
             self.res = res
             self.srf = pg.display.set_mode(self.res)
@@ -165,7 +171,7 @@ class VOS:
         self.LOG += text + '\n'
         print(text)
 
-    # loads a font from files/fonts/{font_name}.otf
+    # loads a font from users/fonts/{font_name}.otf
     def load_font(self, name="monospace", size=17):
         return pg.font.Font(self.path + self.path_fonts + name + '.otf', size)
 
@@ -201,12 +207,17 @@ class VOS:
             self.render()
         for app in self.running:
             app.close()
-        pg.display.quit()
 
     def update(self):
         self.input.update()
         self.delta = self.clock.get_time()
         self.time += self.delta
+
+        if pg.K_ESCAPE in self.input.keys_inst:
+            for app in self.running:
+                if app.name != "Desktop":
+                    app.close()
+        
         for app in self.running:
             if app.active:
                 app.update()
@@ -221,6 +232,5 @@ class VOS:
         pg.display.update()
 
 if __name__ == "__main__":
-    vos = VOS(res=None)
-    vos.get_app("Desktop").run()
-    vos.start()
+    VOS(user="username").start()
+    pg.display.quit()

@@ -200,7 +200,7 @@ class ScrollTextNode(SurfaceNode):
         super().render()
 
 class ButtonNode(TextNode):
-    def __init__(self, app, pos=(0,0), size=(100, 100), text="This is a TextNode",
+    def __init__(self, app, pos=(0,0), size=(100, 100), text="This is a ButtonNode",
                  font = None, color=(255,255,255), background=(0,0,0), on_press=None,
                  center = False):
         super().__init__(app, pos, size, text, font, color, background, center)
@@ -211,7 +211,48 @@ class ButtonNode(TextNode):
         if not self.app.visible:
             return
         inp = self.vos.input
-        self.pressed = True
+        self.pressed = False
         if inp.click_inst and point_within_rect(self.app.mouse, [self.x, self.y]+list(self.size)) and self.on_press:
-            self.on_press()
+            if self.on_press:self.on_press()
             self.pressed = True
+
+class SelectNode(TextNode):
+    def __init__(self, app, pos=(0,0), size=(100, 100), text="This is a SelectNode",
+                 font = None, color=(255,255,255), background=(0,0,0), on_press=None,
+                 center = False):
+        super().__init__(app, pos, size, text, font, color, background, center)
+        self.on_press = on_press
+        self.selected = False
+    def update(self):
+        super().update()
+        if not self.app.visible:
+            return
+        inp = self.vos.input
+        if inp.click_inst:
+            if point_within_rect(self.app.mouse, [self.x, self.y]+list(self.size)) and self.on_press:
+                if self.on_press:self.on_press()
+                self.selected = True
+            else:
+                self.selected = False
+
+class InputNode(SelectNode):
+    def __init__(self, app, pos=(0,0), size=(100, 100), text="",
+                 font = None, color=(255,255,255), background=(0,0,0), on_change=None,
+                 center = False):
+        self.on_change = on_change
+        super().__init__(app, pos, size, text, font, color, background, self.clear_input, center)
+    def clear_input(self):
+        self.vos.input.text = ""
+        self.text = ""
+    def update(self):
+        super().update()
+        if not self.app.visible:
+            return
+        if self.selected:
+            inp = self.vos.input
+            if inp.text:
+                self.text += inp.text
+                inp.text = ""
+            if pg.K_RETURN in inp.keys_inst:
+                if self.on_change:self.on_change(self.text)
+                self.selected = False

@@ -27,6 +27,8 @@ class App:
         
     def run(self):
         app = type(self)(self.vos)
+        running_names = ', '.join([f'{app.name}{app.id}' for app in self.vos.running])
+        print(f"adding {self.name}{self.id} to {running_names}")
         self.vos.running.append(app)
         app.on_run()
         self.vos.on_run(app)
