@@ -28,7 +28,7 @@ class App:
     def run(self):
         app = type(self)(self.vos)
         running_names = ', '.join([f'{app.name}{app.id}' for app in self.vos.running])
-        print(f"adding {self.name}{self.id} to {running_names}")
+        #print(f"adding {self.name}{self.id} to {running_names}")
         self.vos.running.append(app)
         app.on_run()
         self.vos.on_run(app)
@@ -103,12 +103,11 @@ class WindowApp(SurfaceApp):
 
     def on_run(self):
         super().on_run()
-        self.focus()
         self.vos.input.on_click.insert(0,self.on_click)
-        self.srf.fill(self.bg)
+        self.focus()
         
     def close(self):
-        if self.on_click in self.vos.input.on_click:
+        while self.on_click in self.vos.input.on_click:
             self.vos.input.on_click.remove(self.on_click)
         super().close()
 
@@ -122,9 +121,9 @@ class WindowApp(SurfaceApp):
                 app.active = False
         self.active = True
         
-        if self in vos.running:
-            vos.running.remove(self)
+        vos.running.remove(self)
         vos.running.append(self)
+        
         if self.on_click in vos.input.on_click:
             vos.input.on_click.remove(self.on_click)
         vos.input.on_click.insert(0,self.on_click)
@@ -211,7 +210,6 @@ class WindowApp(SurfaceApp):
         srf.blit(self.srf, (0, self.tab_height))
         self.minimize_start = self.vos.time
         self.minimize_srf = srf
-        print("Started minimization animation")
         
     
     def idle_render(self):
