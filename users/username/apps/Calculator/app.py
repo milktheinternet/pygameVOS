@@ -7,6 +7,8 @@ class MyApp(NodeApp):
         self.init_res = self.res
         self.fs = False
         self.vos.input.text = ""
+        self.resizeable = True
+        self.expression = ""
 
     def on_run(self):
         super().on_run()
@@ -14,11 +16,15 @@ class MyApp(NodeApp):
         self.reset()
         self.update_exp()
 
+    def resize(self, res=None):
+        super().resize(res)
+        self.setup_nodes()
+        self.update_exp()
+        
+
     def fullscreen(self):
         self.fs = not self.fs
         self.resize(self.vos.res if self.fs else self.init_res)
-        self.setup_nodes()
-        self.update_exp()
 
     def setup_nodes(self, expression_height = 35, font_size = 30, margin = 5):
 

@@ -89,6 +89,7 @@ class WindowApp(SurfaceApp):
         self.tab_bg = (200, 200, 200)
         self.tab_close = (255, 0, 0)
         self.tab_minimize = (255, 200, 0)
+        self.tab_resize = (0, 0, 255)
 
         self.dragging = False
         self.drag_from = (0, 0)
@@ -100,6 +101,8 @@ class WindowApp(SurfaceApp):
         self.minimize_start = 0
         self.minimize_duration = 500
         self.minimize_srf = None
+
+        self.resizeable = False
 
     def on_run(self):
         super().on_run()
@@ -151,6 +154,9 @@ class WindowApp(SurfaceApp):
                 self.close()
             elif mx > tabx + self.res[0] - tabh*2: # minimize button
                 self.minimize()
+            elif self.resizeable and mx > tabx + self.res[0] - tabh*3:
+                # resizing button
+                self.vos.get_app("Resizer").run(target=self)
             elif self.active:
                 self.dragging = True
                 self.drag_from = self.mouse
@@ -173,6 +179,8 @@ class WindowApp(SurfaceApp):
         self.tab_srf.fill(self.tab_bg)
         pg.draw.rect(self.tab_srf, self.tab_close, (w-h, 0, h, h))
         pg.draw.rect(self.tab_srf, self.tab_minimize, (w-h*2, 0, h, h))
+        if self.resizeable:
+            pg.draw.rect(self.tab_srf, self.tab_resize, (w-h*3, 0, h, h))
 
     @property
     def tab_pos(self):
@@ -195,7 +203,7 @@ class WindowApp(SurfaceApp):
             mx, my = self.vos.input.mouse
             dx, dy = self.drag_from
             self.x, self.y = mx - dx, my - dy
-            self.x = max(-self.res[0] + self.tab_height * 3, min(self.vos.res[0]-self.tab_height, self.x))
+            self.x = max(-self.res[0] + self.tab_height * 4, min(self.vos.res[0]-self.tab_height, self.x))
             self.y = max(self.tab_height, min(self.vos.res[1], self.y))
             if not self.vos.input.click:
                 self.dragging = False
