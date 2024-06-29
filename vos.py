@@ -241,5 +241,6 @@ class VOS:
         pg.display.update()
 
 if __name__ == "__main__":
-    VOS(res=(650*4//3, 650), user="username").start()
+    vos = VOS(user="username")
+    vos.start()
     pg.display.quit()

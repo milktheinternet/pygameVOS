@@ -6,3 +6,5 @@ class MyApp(App):
         self.desktop = False
     def run(self):
         self.vos.get_app("Desktop").run()
+        for app in self.vos.get_app("Settings").get("on-start"):
+            self.vos.get_app(app).run()

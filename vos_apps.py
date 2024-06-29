@@ -292,7 +292,7 @@ class DictMenuApp(TextApp):
         if self.location:
             self.location.pop()
             if "double_back" in self.branchflags:
-                self.branchflags = []
+                self.branchflags.remove("double_back")
                 self.back()
         
     def get_branch(self, loc):
@@ -308,7 +308,7 @@ class DictMenuApp(TextApp):
 
         self.branchflags = branch.get("flags")
         if self.branchflags != None:
-            options.remove('flags')
+            options.remove("flags")
         else:
             self.branchflags = []
 
@@ -348,3 +348,10 @@ class DictMenuApp(TextApp):
             self.idx += 1
 
         self.update_options()
+
+    def resize(self, res=None):
+        super().resize(res)
+        self.old_text = None
+        self.render()
+        self.update_options()
+

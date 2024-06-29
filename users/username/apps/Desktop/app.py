@@ -29,10 +29,16 @@ class MyApp(WindowApp):
 
     def on_run(self):
         settings = self.vos.get_app("Settings")
-        self.bg = eval(settings.get("desktop-background"))
+        dbg = settings.get("desktop-background")
+        if dbg:
+            self.bg = eval(dbg)
+        else:
+            self.bg = (255, 0, 255)
+            self.vos.log("ERROR: 'desktop-background' not found in settings.")
         super().on_run()
         self.prep_app_btns()
         self.vos.on_run_funcs.append(self.on_vos_run)
+        self.redraw()
 
     def on_vos_run(self, app):
         if 'WindowApp' in app.flags:
@@ -82,9 +88,8 @@ class MyApp(WindowApp):
         self.minimized.append(app)
         print('minimized', app.name, self.minimized)
 
-    def render(self):
+    def redraw(self):
         self.srf.fill(self.bg)
         self.draw_btns()
-        super().render()
     
         
