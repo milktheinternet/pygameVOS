@@ -63,6 +63,7 @@ class SurfaceApp(App):
         if res: self.res = res
         self.center()
         self.srf = pg.Surface(self.res)
+        self.vos.need_redraw=True
     def on_run(self):
         self.resize()
     def render(self):

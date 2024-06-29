@@ -3,7 +3,7 @@ from vos import *
 
 class MyApp(NodeApp):
     def __init__(self, vos, instancer=True):
-        super().__init__(vos, "Prompt", res=(350, 75))
+        super().__init__(vos, "Prompt", res=(600, 75))
         self.desktop = False
         self.callback = lambda x:self.vos.log("No callback for prompt. Response:",x)
         self.prompt = "Enter text:"
@@ -21,7 +21,6 @@ class MyApp(NodeApp):
         self.vos.input.text = ""
         self.setup_nodes()
         self.render_nodes()
-        self.focus()
 
     def on_confirm(self):
         self.vos.input.reset()

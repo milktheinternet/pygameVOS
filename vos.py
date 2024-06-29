@@ -278,6 +278,9 @@ class VOS:
                     app.idle_render()
                 break
 
+    def alert(self, text):
+        self.get_app("Alert").run(text)
+
 if __name__ == "__main__":
     res = (650*4//3, 650)
     user = "username"
@@ -289,5 +292,6 @@ if __name__ == "__main__":
             vos = VOS(user=user, res=eval(nres))
         else:
             settings.set("resolution", res)
+    
     vos.start()
     pg.display.quit()

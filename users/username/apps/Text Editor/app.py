@@ -51,13 +51,11 @@ class MyApp(NodeApp):
 
     def btnsaveas(self):
         def cb(name):
-            print("SAVING", name)
             self.vos.save("tmp/"+name, self.get_text())
             
             filesapp = self.vos.get_app("Files").run()
             
             def cb2(savepath):
-                print("SUCCESSFULLY SAVED", name, "TO", savepath)
                 self.saved = True
                 self.savepath = savepath
                 self.vos.delete("tmp/"+name)
@@ -69,9 +67,7 @@ class MyApp(NodeApp):
         if not app:
             self.log("Could not find text prompt app")
         else:
-            app = app.run()
-            app.prompt = "Enter file name below (including type)."
-            app.callback = cb
+            app.run(cb, "Enter file name below (including type).")
 
     def btnsave(self):
         if self.savepath:
