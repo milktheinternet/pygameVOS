@@ -33,6 +33,8 @@ class VOS:
         self.LOG = ""
 
         self.set_user(user)
+        
+        self.need_redraw = True
 
     def set_user(self, username):
         
@@ -226,19 +228,47 @@ class VOS:
                 app = self.running[-1]
                 if 'WindowApp' in app.flags:
                     self.get_app("Resizer").run(app)
-        
+
+        had_update = False
         for app in self.running:
             if app.active:
                 app.update()
+                if 'WindowApp' in app.flags:
+                    had_update = True
+
+        # focus top app when no other apps are focused
+        if not had_update:
+            for app in reversed(self.running):
+                if 'WindowApp' in app.flags:
+                    app.focus()
+                    break
+                
         self.clock.tick(60)
         
     def render(self):
+        
+        if self.need_redraw:
+            self.need_redraw=False
+            self.draw()
+        else:
+            self.lazy_draw()
+        pg.display.update()
+
+    def draw(self):
         for app in self.running:
             if app.active:
                 app.render()
             else:
                 app.idle_render()
-        pg.display.update()
+        
+    def lazy_draw(self):
+        for app in reversed(self.running):
+            if 'WindowApp' in app.flags:
+                if app.active:
+                    app.render()
+                else:
+                    app.idle_render()
+                break
 
 if __name__ == "__main__":
     res = (650*4//3, 650)

@@ -116,6 +116,7 @@ class WindowApp(SurfaceApp):
 
     def focus(self):
         vos = self.vos
+        vos.need_redraw=True
         self.visible = True
 
         #stop all window apps
@@ -146,7 +147,7 @@ class WindowApp(SurfaceApp):
 
         clicked_window = point_within_rect((mx, my), self.full_rect)
 
-        if clicked_window:
+        if clicked_window and not self.active:
             self.focus()
         
         if point_within_rect((mx, my), (tabx, taby, self.res[0], tabh)):
@@ -203,6 +204,7 @@ class WindowApp(SurfaceApp):
     
     def update(self):
         if self.dragging:
+            self.vos.need_redraw=True
             mx, my = self.vos.input.mouse
             dx, dy = self.drag_from
             self.x, self.y = mx - dx, my - dy
@@ -229,6 +231,7 @@ class WindowApp(SurfaceApp):
                 self.render_tab()
             super().idle_render()
         if self.minimize_start:
+            self.vos.need_redraw=True
             delta = self.vos.time - self.minimize_start
             delta /= self.minimize_duration
             delta **= 2
