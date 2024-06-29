@@ -1,3 +1,0 @@
-This is a test help file.
-
-It will demonstrate the capabilities of the Help app.

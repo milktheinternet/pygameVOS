@@ -1,0 +1,25 @@
+Windows have two to three buttons in the
+top-right corner.
+
+The red button closes the app.
+The yellow button minimizes the window.
+The blue button allows you to resize the
+window.
+
+Uniminimizing apps:
+    In order to restore a window, you
+    only need to open the "Unminimizer"
+    app that looks like a stack of three
+    windows. Then, click on the app you
+    wish to open!
+
+You can drag the window around by the
+light grey tab at the top.
+
+Resizing windows:
+    When you click the blue resize
+    button, a white rectangle will
+    highlight the borders of the app.
+    Click where you would like the
+    top-left and bottom right corners to
+    be.

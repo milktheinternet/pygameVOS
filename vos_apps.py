@@ -259,7 +259,8 @@ class TextApp(WindowApp):
         self.line_height = 20
         if not self.res:
             self.res = self.vos.res
-        self.max_lines = self.res[1]//(self.line_height+self.margin)
+        self.max_lines = self.res[1]// \
+                         (self.line_height)
         self.bg = (0,0,0)
         self.color = (255,255,255)
         self.old_text = ""
@@ -332,6 +333,14 @@ class DictMenuApp(TextApp):
             elif branch[choice]:branch[choice]()
 
         self.update_render(s)
+
+    def update_render(self, s):
+        s = s.split('\n')
+        mxl = self.max_lines // 2
+        if self.idx >= mxl:
+            s = s[self.idx-mxl:]
+        s = '\n'.join(s)
+        super().update_render(s)
 
     def on_run(self):
         super().on_run()

@@ -2,13 +2,12 @@ CALCULATOR HELP
 ---
 
 You can type directly into the
-calculator.
+calculator or you can use the buttons.
 
 Press ENTER or click the '=' button to
 see a solution.
 
-Press BACKSPACE or click the '<-' button
-to remove the last character.
+Press BACKSPACE or click the '<-' to go back a character.
 
 Click the 'C' button to reset the
 calculator.

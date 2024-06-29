@@ -1,4 +1,5 @@
 {
 'desktop-background':'(50,50,50)',
-'on-start':['Help'],
+'on-start':'["Help"]',
+'resolution':'(866, 650)',
 }

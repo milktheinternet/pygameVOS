@@ -1,3 +1,4 @@
+
 from vos import *
 
 # SETTINGS APP
@@ -28,7 +29,8 @@ class MyApp(WindowApp):
     def set_json(self, json):
         s = "{\n"
         for key, value in json.items():
-            s += f"'{key}':'{value}',\n"
+            a, b = "'",'"'
+            s += f"'{key}':'{str(value).replace(a,b)}',\n"
         s += "}\n"
         with open(self.settings_path,'w') as f: f.write(s)
 

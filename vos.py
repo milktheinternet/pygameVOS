@@ -241,6 +241,15 @@ class VOS:
         pg.display.update()
 
 if __name__ == "__main__":
-    vos = VOS(user="username")
+    res = (650*4//3, 650)
+    user = "username"
+    vos = VOS(user=user, res=res)
+    settings = vos.get_app("Settings")
+    if settings:
+        nres = settings.get("resolution")
+        if nres:
+            vos = VOS(user=user, res=eval(nres))
+        else:
+            settings.set("resolution", res)
     vos.start()
     pg.display.quit()
