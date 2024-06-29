@@ -36,6 +36,8 @@ class VOS:
         
         self.need_redraw = True
 
+        self.after_render = []
+
     def set_user(self, username):
         
         self.path = 'users/'+username+'/'
@@ -239,7 +241,7 @@ class VOS:
         # focus top app when no other apps are focused
         if not had_update:
             for app in reversed(self.running):
-                if 'WindowApp' in app.flags:
+                if app.visible and 'WindowApp' in app.flags:
                     app.focus()
                     break
                 
@@ -252,6 +254,12 @@ class VOS:
             self.draw()
         else:
             self.lazy_draw()
+
+        for fun in self.after_render:
+            fun()
+
+        self.after_render = []
+        
         pg.display.update()
 
     def draw(self):

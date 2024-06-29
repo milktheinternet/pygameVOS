@@ -110,6 +110,7 @@ class WindowApp(SurfaceApp):
         self.focus()
         
     def close(self):
+        self.vos.need_redraw = True
         while self.on_click in self.vos.input.on_click:
             self.vos.input.on_click.remove(self.on_click)
         super().close()
@@ -246,9 +247,9 @@ class WindowApp(SurfaceApp):
                 x, y = self.tab_pos
                 pos = (x+self.res[0]-size[0],
                        y)
-                self.vos.srf.blit(
+                self.vos.after_render.append(lambda:self.vos.srf.blit(
                     pg.transform.smoothscale(
-                        self.minimize_srf, size), pos)
+                        self.minimize_srf, size), pos))
 
     def render_tab(self):
         self.parent_srf.blit(self.tab_srf, self.tab_pos)
