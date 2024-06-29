@@ -1,0 +1,8 @@
+SETTINGS HELP
+---
+Use the UP and DOWN arrows to navigate
+different settings.
+
+Press ENTER to change a setting.
+
+Press SHIFT + ENTER to add a new setting.

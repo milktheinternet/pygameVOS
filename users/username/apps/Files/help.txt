@@ -1,0 +1,10 @@
+FILES HELP
+---
+
+Press UP or DOWN arrows to navigate
+between options.
+
+Press ENTER to select an option.
+
+The current path will be displayed at
+the top of the window.

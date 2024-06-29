@@ -1,0 +1,4 @@
+RUNNING HELP
+---
+
+Lists all currently running apps.

@@ -71,11 +71,14 @@ class MyApp(NodeApp):
         BTN_H = (H - EXP_H)/ceil(len(button_data)/self.btns_per_row)
 
         x, y = 0, EXP_H
+        i = 0
         for text, on_press in button_data.items():
             btn = ButtonNode(self, size=(BTN_W-margin, BTN_H-margin), pos=(x+margin//2, y+margin//2), text=text, on_press=on_press, center=True, font = self.font)
             self.add(btn)
             x += BTN_W
-            if x >= W:
+            i += 1
+            if i>=self.btns_per_row:
+                i = 0
                 x = 0
                 y += BTN_H
 

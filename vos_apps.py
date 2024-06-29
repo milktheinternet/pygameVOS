@@ -182,6 +182,9 @@ class WindowApp(SurfaceApp):
         if self.resizeable:
             pg.draw.rect(self.tab_srf, self.tab_resize, (w-h*3, 0, h, h))
 
+        rendered = self.vos.load_font(size=13).render(self.name, True, (0,0,0))
+        self.tab_srf.blit(rendered, (0, h-rendered.get_height()))
+
     @property
     def tab_pos(self):
         return (self.x, self.y-self.tab_height)

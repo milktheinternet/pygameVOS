@@ -1,0 +1,17 @@
+CALCULATOR HELP
+---
+
+You can type directly into the
+calculator.
+
+Press ENTER or click the '=' button to
+see a solution.
+
+Press BACKSPACE or click the '<-' button
+to remove the last character.
+
+Click the 'C' button to reset the
+calculator.
+
+Click the 'FS' button to toggle
+fullscreen mode.

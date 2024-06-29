@@ -56,6 +56,7 @@ class Node:
 
 class SurfaceNode(Node):
     def __init__(self, app, pos=(0,0), size=(100, 100), alpha = False):
+        size = size_fix(size)
         super().__init__(app, pos)
         self.size = size
         self.srf = pg.Surface(size) if not alpha else pg.Surface(size, pg.SRCALPHA)
@@ -66,6 +67,7 @@ class SurfaceNode(Node):
 
 class ImageNode(SurfaceNode):
     def __init__(self, app, pos=(0,0), size=(100, 100), srf=None, smooth=False):
+        size = size_fix(size)
         super().__init__(app, pos, size)
         if srf:
             self.srf = (pg.transform.smoothscale if smooth else pg.transform.scale)(srf, size)
@@ -73,6 +75,7 @@ class ImageNode(SurfaceNode):
 class SliderNode(SurfaceNode):
     def __init__(self, app, pos=(0,0), size=(250, 25), value=0, maximum=255, rounded=True, bg=(0,0,0),
                  fg=(255,255,255)):
+        size = size_fix(size)
         super().__init__(app, pos, size)
         self.value, self.maximum, self.rounded = value, maximum, rounded
         self.bg = bg
@@ -113,9 +116,13 @@ class SliderNode(SurfaceNode):
         pg.draw.rect(self.srf, self.fg, (0, 0, round(self.value/self.maximum*self.size[0]), self.size[1]))
         super().render()
 
+def size_fix(size):
+    return (round(max(1, size[0])), round(max(1, size[1])))
+
 class RectNode(Node):
     def __init__(self, app, pos=(0,0), size=(100, 100), color=(255,0,255)):
         super().__init__(app, pos)
+        size = size_fix(size)
         self.size = size
         self.srf = pg.Surface(size)
         self.color = color
@@ -127,6 +134,7 @@ class TextNode(SurfaceNode):
     def __init__(self, app, pos=(0,0), size=(100, 100), text="This is a TextNode", font = None,
                  color=(255,255,255), background=(0,0,0), center = False, parent_srf = None,
                  nobg = False):
+        size = size_fix(size)
         super().__init__(app, pos, size, alpha = nobg)
         if parent_srf:
             self.parent_srf = parent_srf
@@ -156,6 +164,7 @@ class TextNode(SurfaceNode):
 class ScrollTextNode(SurfaceNode):
     def __init__(self, app, pos=(0,0), size=(100, 100), text="This is a TextNode", font = None,
                  color=(255,255,255), background=(0,0,0), center = False, line_height = None, parent_srf = None):
+        size = size_fix(size)
         super().__init__(app, pos, size)
         if parent_srf:
             self.parent_srf = parent_srf
@@ -203,6 +212,7 @@ class ButtonNode(TextNode):
     def __init__(self, app, pos=(0,0), size=(100, 100), text="This is a ButtonNode",
                  font = None, color=(255,255,255), background=(0,0,0), on_press=None,
                  center = False):
+        size = size_fix(size)
         super().__init__(app, pos, size, text, font, color, background, center)
         self.on_press = on_press
         self.pressed = False
@@ -220,6 +230,7 @@ class SelectNode(TextNode):
     def __init__(self, app, pos=(0,0), size=(100, 100), text="This is a SelectNode",
                  font = None, color=(255,255,255), background=(0,0,0), on_press=None,
                  center = False):
+        size = size_fix(size)
         super().__init__(app, pos, size, text, font, color, background, center)
         self.on_press = on_press
         self.selected = False
@@ -239,6 +250,7 @@ class InputNode(SelectNode):
     def __init__(self, app, pos=(0,0), size=(100, 100), text="",
                  font = None, color=(255,255,255), background=(0,0,0), on_change=None,
                  center = False):
+        size = size_fix(size)
         self.on_change = on_change
         super().__init__(app, pos, size, text, font, color, background, self.clear_input, center)
     def clear_input(self):

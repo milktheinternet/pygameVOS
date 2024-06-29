@@ -1,0 +1,15 @@
+TEXT EDITOR HELP
+---
+
+Press the arrow keys to navigate between
+and within lines.
+
+save - saves current text file
+
+save as - allows you to determine a file
+name and save it wherever you like.
+
+new - creates a new, empty, unsaved
+document
+
+fullscreen - toggle fullscreen mode

@@ -1,0 +1,4 @@
+POWER OFF HELP
+---
+
+Open the app to end this VOS session.

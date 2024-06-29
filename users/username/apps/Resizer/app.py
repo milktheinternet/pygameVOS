@@ -10,6 +10,7 @@ class MyApp(WindowApp):
         app = super().run()
         app.target = target
         app.srf.set_alpha(200)
+        app.redraw()
 
     def update(self):
         inp = self.vos.input
@@ -27,11 +28,17 @@ class MyApp(WindowApp):
             if ax > bx: ax, bx = bx, ax
             if ay > by: ay, by = by, ay
             w, h = bx - ax, by - ay
+            w = max(50, w)
+            h = max(50, h)
             self.target.resize((w, h))
+            self.target.render()
             self.target.x, self.target.y = ax, ay
-            
-            self.srf.fill((0,0,0))
-            pg.draw.rect(self.srf, (255,255,255), self.target.rect)
+            self.redraw()
 
         if pg.K_RETURN in inp.keys:
             self.close()
+            self.target.focus()
+            
+    def redraw(self):            
+        self.srf.fill((0,0,0))
+        pg.draw.rect(self.srf, (255,255,255), self.target.rect)

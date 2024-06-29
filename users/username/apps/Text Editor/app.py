@@ -5,6 +5,8 @@ class MyApp(NodeApp):
     def __init__(self, vos, instancer=True):
         super().__init__(vos, "Text Editor", res=(400,600))
 
+        self.resizeable = True
+
         self.init_res = self.res
         self.fullscreen = False
 
@@ -39,6 +41,9 @@ class MyApp(NodeApp):
     def toggle_fs(self):
         self.fullscreen = not self.fullscreen
         self.resize(self.vos.res if self.fullscreen else self.init_res)
+
+    def resize(self, res=None):
+        super().resize(res)
         self.setup_nodes()
 
     def open_path(self, path):

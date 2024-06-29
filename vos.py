@@ -213,10 +213,19 @@ class VOS:
         self.delta = self.clock.get_time()
         self.time += self.delta
 
-        if pg.K_ESCAPE in self.input.keys_inst:
-            for app in self.running:
-                if app.name != "Desktop":
-                    app.close()
+        inp = self.input
+
+        if pg.K_ESCAPE in inp.keys:
+            if pg.K_x in inp.keys_inst:
+                for app in self.running:
+                    if app.name != "Desktop":
+                        app.close()
+            elif pg.K_q in inp.keys_inst:
+                self.input.quit = True
+            elif pg.K_r in inp.keys_inst and self.running:
+                app = self.running[-1]
+                if 'WindowApp' in app.flags:
+                    self.get_app("Resizer").run(app)
         
         for app in self.running:
             if app.active:
@@ -232,5 +241,5 @@ class VOS:
         pg.display.update()
 
 if __name__ == "__main__":
-    VOS(user="username").start()
+    VOS(res=(650*4//3, 650), user="username").start()
     pg.display.quit()

@@ -3,8 +3,6 @@ from vos import *
 class MyApp(WindowApp):
     def __init__(self, vos):
         super().__init__(vos, "Desktop")
-
-        self.bg = (50,100,150)
         
         self.icons = {}
 
@@ -30,6 +28,8 @@ class MyApp(WindowApp):
         return srf
 
     def on_run(self):
+        settings = self.vos.get_app("Settings")
+        self.bg = eval(settings.get("desktop-background"))
         super().on_run()
         self.prep_app_btns()
         self.vos.on_run_funcs.append(self.on_vos_run)

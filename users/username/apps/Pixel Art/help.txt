@@ -1,0 +1,21 @@
+PIXEL ART HELP
+---
+
+You may click one of the buttons on the
+side bar, or the keyboard shortcut
+denoted with square brackets "[]".
+
+Save will export the image to
+"tmp/export.png"
+
+New will prompt for resolution. Close
+that prompt to cancel.
+
+Color and size set properties of the
+brush.
+
+Pen, line, fill, rect, and circle all
+represent different drawing modes.
+
+Press 'fullscreen' to toggle fullscreen
+mode.
